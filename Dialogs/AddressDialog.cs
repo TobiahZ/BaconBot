@@ -55,25 +55,5 @@ namespace BaconBot.Dialogs
             context.Done<string>(null);
         }
 
-        //private async Task ResumeAfterLocationDialogAsync(IDialogContext context, IAwaitable<Place> result)
-        //{
-        //    var place = await result; 
-
-        //    if (place != null)
-        //    {
-        //        var address = place.GetPostalAddress(); 
-        //        var formatteAddress = string.Join(",", new[]
-        //        {
-        //            address.StreetAddress,
-        //            address.Locality,
-        //            address.Region, 
-        //            address.PostalCode,
-        //            address.Country
-        //        }.Where(x => !string.IsNullOrEmpty(x)));
-
-        //        await context.PostAsync("Thanks, I will ship it to " + formatteAddress);
-        //    }
-        //    context.Done<object>(place);
-        //}
     }
 }

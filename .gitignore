@@ -11,6 +11,7 @@
 *.vcxproj.filters
 
 web.SECRETS.config
+ExampleRootDialog.cs
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
