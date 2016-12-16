@@ -14,13 +14,15 @@ namespace BaconBot.Dialogs
         public async Task StartAsync(IDialogContext context)
         {
             context.Wait(WelcomeUser);
+
         }
 
         public virtual async Task WelcomeUser(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
             await context.PostAsync("Welcome to Bacon bot");
-            await context.PostAsync("We're open from 9-9 Friday - Sunday");
-            await context.PostAsync("Right now we only deliver in the Haight..."); 
+            await context.PostAsync("We're open from 9am-9pm Friday - Sunday");
+            await context.PostAsync("Right now we only deliver in the Haight...");
+            context.Done(result); 
         }
 
     }

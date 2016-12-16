@@ -30,7 +30,7 @@ namespace BaconBot.Dialogs
             var prompt = "Where should I ship your bacon?";
             var locationDialog = new LocationDialog(apiKey, context.Activity.ChannelId, prompt, options, requiredFields);
 
-            context.Call(new LocationDialog(apiKey, context.Activity.ChannelId, prompt, options, requiredFields), ResumeAfterLocationDialog);
+            context.Call(new LocationDialog(apiKey, context.Activity.ChannelId, prompt, options, requiredFields), ResumeAfterLocationDialog); 
             //await context.Forward(new LocationDialog(apiKey, context.Activity.ChannelId, prompt, options, requiredFields), ResumeAfterLocationDialog, message, System.Threading.CancellationToken.None);
         }
 
@@ -50,6 +50,7 @@ namespace BaconBot.Dialogs
                     address.Country
                 }.Where(x => !string.IsNullOrEmpty(x)));
 
+                
                 await context.PostAsync("Thanks, I will ship it to " + formatteAddress);
             }
             context.Done<string>(null);

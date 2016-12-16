@@ -19,21 +19,23 @@ namespace BaconBot.Dialogs
 
         public async Task StartAsync(IDialogContext context)
         {
+            context.Call(new WelcomeDialog(), ResumeAfterWelcome); 
             context.Wait(this.MessageReceivedAsync);
         }
 
         public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
-            context.Call(new WelcomeDialog(), ResumeAfterWelcome);
             try
             {
                 var message = await result; 
-                if (message.Type == ActivityTypes.ContactRelationUpdate || message.Type == ActivityTypes.ConversationUpdate)
-                {
-                    await context.PostAsync("Welcome to Bacon Bot"); 
-                    //context.Wait(this.MessageReceivedAsync);
-                    return;
-                }
+               
+                //if (message.Type == ActivityTypes.ContactRelationUpdate || message.Type == ActivityTypes.ConversationUpdate)
+                //{
+                //    await context.PostAsync("Welcome to Bacon Bot");
+                //    context.Call(new WelcomeDialog(), ResumeAfterWelcome);
+                //    //context.Wait(this.MessageReceivedAsync);
+                //    return;
+                //}
 
                 var messageText = message.Text;
                 if (message.Text.ToLower().Contains("help") ||
@@ -47,7 +49,8 @@ namespace BaconBot.Dialogs
                 }
                 else if (message.Text.ToLower().Contains("bacon"))
                 {
-                    context.Wait(this.DisplayLocationDialog); 
+                    //context.Wait(this.DisplayLocationDialog);
+                    context.Call(new CheckLocationDialog(), ResumeAfterLocationCheckDialog);
                 }
                 else
                 {
@@ -64,12 +67,20 @@ namespace BaconBot.Dialogs
             
         }
 
+        private async Task ResumeAfterLocationCheckDialog(IDialogContext context, IAwaitable<IMessageActivity> result)
+        {
+            var message = await result; 
+            
+            await context.PostAsync(message); 
+            throw new NotImplementedException();
+        }
+
         private async Task ResumeAfterWelcome(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
             try
             {
                 var message = await result;
-                context.Wait(this.DisplayLocationDialog); 
+                context.Wait(this.MessageReceivedAsync); 
 
             }
             catch (Exception ex)
