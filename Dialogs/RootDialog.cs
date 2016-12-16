@@ -24,6 +24,7 @@ namespace BaconBot.Dialogs
 
         public virtual async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
+            context.Call(new WelcomeDialog(), ResumeAfterWelcome);
             try
             {
                 var message = await result; 
@@ -63,6 +64,22 @@ namespace BaconBot.Dialogs
             
         }
 
+        private async Task ResumeAfterWelcome(IDialogContext context, IAwaitable<IMessageActivity> result)
+        {
+            try
+            {
+                var message = await result;
+                context.Wait(this.DisplayLocationDialog); 
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                await context.PostAsync($"Failed with message: {ex.Message}");
+                context.Wait(this.MessageReceivedAsync);
+            }
+        }
+
         private async Task DisplayBaconOptions(IDialogContext context)
         {
             try
@@ -94,13 +111,13 @@ namespace BaconBot.Dialogs
                     "Unooked Bacon",
                     "Massively scalable Bacon",
                     "1 Pound of Uncooked Bacon",
-                    new CardImage(url: "https://acom.azurecomcdn.net/80C57D/cdn/mediahandler/docarticles/dpsmedia-prod/azure.microsoft.com/en-us/documentation/articles/storage-introduction/20160801042915/storage-concepts.png"),
+                    new CardImage(url: "https://upload.wikimedia.org/wikipedia/commons/e/e8/RawBacon.JPG"),
                     new CardAction(ActionTypes.ImBack, "Uncooked", value: "uncooked")),
                 GetHeroCard(
                     "Cooked Bacon",
                     "Process events with Bacon",
                     "1 Pound of Bacon - Cooked",
-                    new CardImage(url: "https://azurecomcdn.azureedge.net/cvt-8636d9bb8d979834d655a5d39d1b4e86b12956a2bcfdb8beb04730b6daac1b86/images/page/services/functions/azure-functions-screenshot.png"),
+                    new CardImage(url: "http://thefreshaussie.com/wp-content/uploads/2015/02/pile_of_bacon.jpg"),
                     new CardAction(ActionTypes.ImBack, "Cooked", value: "cooked")),
             };
         }
@@ -133,8 +150,18 @@ namespace BaconBot.Dialogs
                 }
 
                 var selection = itemText;
+                context.ConversationData.SetValue("BaconChoice", selection);
 
-                await context.PostAsync($"{ itemText } good choice");
+
+                var baconChoice = "";
+                var address = ""; 
+                
+                context.ConversationData.TryGetValue("BaconChoice", out baconChoice);
+                context.ConversationData.TryGetValue("Address", out address); 
+
+                await context.PostAsync($"{ baconChoice } good choice");
+                await context.PostAsync($"Your bacon will be delivered here within the hour: { address } "); 
+                                
             }
             catch (Exception ex)
             {
@@ -189,100 +216,17 @@ namespace BaconBot.Dialogs
                     address.PostalCode,
                     address.Country
                 }.Where(x => !string.IsNullOrEmpty(x)));
- 
+
+                context.ConversationData.SetValue("Address", formatteAddress);
                 await context.PostAsync("Great, you want bacon here: " + formatteAddress);
 
             }
+            
             await context.PostAsync("Let's take a look at the menu..."); 
             await DisplayBaconOptions(context);
         }
 
-        //Old Code 
-        //private static IList<Attachment> GetCardsAttachments()
-        //{
-        //    var cardList = new List<Attachment>();
-        //    foreach (var searchResult in searchResults)
-        //    {
-        //        var category = searchResult.CategoryName;
-        //        foreach (var article in searchResult.KnowledgeBaseArticles)
-        //        {
-        //            var heroCard = new HeroCard
-        //            {
-        //                Title = article.Name,
-        //                Subtitle = category,
-        //                Text = article.Description,
-        //                //Images = new List<CardImage>() { cardImage },
-        //                Buttons = new List<CardAction>() { new CardAction(ActionTypes.ImBack, "Run Fix", null, article.Name) },
-        //            };
-        //            cardList.Add(heroCard.ToAttachment());
-        //        }
-        //    }
-        //    return cardList;
-        //}
-
-        //private async Task ResumeAfterLocationDialogAsync(IDialogContext context, IAwaitable<string> result)
-        //{
-        //    // context.Done(true);
-        //    var message = await result;
-        //    await context.Forward(new SelectionDialog(), ResumeAfterSelectionDialog, message, CancellationToken.None);
-        //}
-
-        //public async Task ResumeAfterSelectionDialog(IDialogContext context, IAwaitable<object> result)
-        //{
-        //    var message = await result;
-        //    await context.PostAsync("In Resume After Selection Dialog and Done"); 
-        //    context.Done(true);  
-        //}
-
-        //private async Task BeginBaconDialog(IDialogContext context, IAwaitable<IMessageActivity> result)
-        //{
-        //    try
-        //    {
-        //        var message = await result;
-        //        var searchString = message.Text;
-
-
-
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine(ex.Message);
-        //        await context.PostAsync($"Failed with message: {ex.Message}");
-        //        context.Wait(this.MessageReceivedAsync);
-        //    }
-        //}
-
-        //private async Task DisplayLocationDialog(IDialogContext context, IAwaitable<IMessageActivity> result)
-        //{
-        //    try
-        //    {
-        //        var message = await result; 
-
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine(ex.Message);
-        //        await context.PostAsync($"Failed with message: {ex.Message}");
-        //        context.Wait(this.MessageReceivedAsync);
-        //    }
-
-        //}
-
-        //var message = await result;
-
-        //if (message.Text.ToLower().Contains("location"))
-        //{
-        //    await context.Forward(new AddressDialog(), ResumeAfterLocationDialogAsync, message, CancellationToken.None);  
-        //    //context.Call(() => new AddressDialog(), ResumeAfterLocationDialogAsync);
-        //}
-        //else
-        //{
-        //    await context.PostAsync($"Say bacon to start your order.");
-        //    context.Wait(MessageReceivedAsync);
-        //}
-
+       
 
 
     }
