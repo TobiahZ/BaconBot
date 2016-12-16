@@ -30,7 +30,7 @@ namespace BaconBot.Dialogs
                 if (message.Type == ActivityTypes.ContactRelationUpdate || message.Type == ActivityTypes.ConversationUpdate)
                 {
                     await context.PostAsync("Welcome to Bacon Bot"); 
-                    context.Wait(this.MessageReceivedAsync);
+                    //context.Wait(this.MessageReceivedAsync);
                     return;
                 }
 
