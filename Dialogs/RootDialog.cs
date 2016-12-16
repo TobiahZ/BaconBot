@@ -63,7 +63,7 @@ namespace BaconBot.Dialogs
             
         }
 
-        private async Task DisplayBaconOptionsDialog(IDialogContext context, IAwaitable<IMessageActivity> result)
+        private async Task DisplayBaconOptions(IDialogContext context)
         {
             try
             {
@@ -190,10 +190,11 @@ namespace BaconBot.Dialogs
                     address.Country
                 }.Where(x => !string.IsNullOrEmpty(x)));
  
-                await context.PostAsync("Thanks, I will ship it to " + formatteAddress);
+                await context.PostAsync("Great, you want bacon here: " + formatteAddress);
 
             }
-            context.Wait(this.DisplayBaconOptionsDialog);
+            await context.PostAsync("Let's take a look at the menu..."); 
+            await DisplayBaconOptions(context);
         }
 
         //Old Code 
