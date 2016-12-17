@@ -19,7 +19,6 @@ namespace BaconBot.Dialogs
 
         public async Task StartAsync(IDialogContext context)
         {
-            context.Call(new WelcomeDialog(), ResumeAfterWelcome); 
             context.Wait(this.MessageReceivedAsync);
         }
 
@@ -54,7 +53,8 @@ namespace BaconBot.Dialogs
                 }
                 else
                 {
-                    await context.PostAsync($"Welcome to Bacon Bot, say 'bacon' to start your order");
+                    //await context.PostAsync($"Welcome to Bacon Bot, say 'bacon' to start your order");
+                    context.Call(new WelcomeDialog(), ResumeAfterWelcome);
                 }
             }
             catch (Exception ex)
@@ -69,10 +69,10 @@ namespace BaconBot.Dialogs
 
         private async Task ResumeAfterLocationCheckDialog(IDialogContext context, IAwaitable<IMessageActivity> result)
         {
-            var message = await result; 
-            
+            var message = await result;
+            context.Wait(MessageReceivedAsync); 
             await context.PostAsync(message); 
-            throw new NotImplementedException();
+            //throw new NotImplementedException(); CONFUSED ABOUT THIS STUFF>>>
         }
 
         private async Task ResumeAfterWelcome(IDialogContext context, IAwaitable<IMessageActivity> result)
